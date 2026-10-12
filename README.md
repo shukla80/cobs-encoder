@@ -27,3 +27,10 @@ This is the original Cheshire/Baker COBS variant with the "0x00 last-zero" conve
 - A single zero byte encodes to `[0x01, 0x01]` (two overhead bytes, zero literals) and decodes back to `[0x00]`.
 - `decode` throws on an empty frame, on an internal `0x00` byte (corruption), and on a truncated run (code promises more literals than remain). It does **not** accept a trailing delimiter — strip it first.
 - The encoded output never contains `0x00`, which is the whole point and is asserted by the test suite.
+
+## Design notes
+
+The window stores values eagerly rather than keeping running aggregates. Running
+sums drift with floating point over long streams, and recomputing from a small
+buffer is cheap enough that the drift is not worth the speed.
+
